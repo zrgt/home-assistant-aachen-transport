@@ -1,8 +1,8 @@
 from datetime import timedelta
 
-DOMAIN = "berlin_transport"
-SCAN_INTERVAL = timedelta(seconds=90)
-API_ENDPOINT = "https://v5.vbb.transport.rest"
+DOMAIN = "aachen_transport"
+SCAN_INTERVAL = timedelta(seconds=60)
+API_ENDPOINT = "https://abfahrt.avv.de/index.php"
 API_MAX_RESULTS = 15
 
 DEFAULT_ICON = "mdi:clock"

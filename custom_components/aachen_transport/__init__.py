@@ -1,4 +1,4 @@
-"""The Berlin (BVG) and Brandenburg (VBB) transport integration."""
+"""The Aachen (AVV) transport integration."""
 from __future__ import annotations
 
 from homeassistant.core import HomeAssistant

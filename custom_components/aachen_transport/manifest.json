@@ -1,0 +1,14 @@
+{
+  "domain": "aachen_transport",
+  "name": "Aachen (AVV) transport",
+  "config_flow": true,
+  "documentation": "https://github.com/zrgt/home-assistant-aachen-transport",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": ["@vas3k", "@zrgt"],
+  "iot_class": "cloud_polling",
+  "version": "0.1.0"
+}

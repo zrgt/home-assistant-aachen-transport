@@ -1,6 +1,6 @@
-// Berlin Transport Timetable Card
+// Aachen Transport Timetable Card
 
-class BerlinTransportTimetableCard extends HTMLElement {
+class AachenTransportTimetableCard extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({
@@ -123,4 +123,4 @@ class BerlinTransportTimetableCard extends HTMLElement {
     }
 }
   
-customElements.define('berlin-transport-timetable-card', BerlinTransportTimetableCard);
+customElements.define('aachen-transport-timetable-card', AachenTransportTimetableCard);
