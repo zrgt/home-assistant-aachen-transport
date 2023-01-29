@@ -2,7 +2,7 @@ from datetime import timedelta
 
 DOMAIN = "aachen_transport"
 SCAN_INTERVAL = timedelta(seconds=60)
-API_ENDPOINT = "https://mova.aseag.de/mbroker/rest/"
+API_ENDPOINT = "https://abfahrt.avv.de/index.php?fw_goto=Preview/build&id="
 
 DEFAULT_ICON = "mdi:clock"
 

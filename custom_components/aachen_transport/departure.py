@@ -22,17 +22,18 @@ class Departure:
 
     @classmethod
     def from_dict(cls, source):
-        stopPrediction = source.get("stopPrediction")
-        line_type = stopPrediction.get("mobilityType")
+        src = source.get("stopPrediction")
+        line_type = "BUS"
         line_visuals = TRANSPORT_TYPE_VISUALS.get(line_type) or {}
-        timestamp=datetime.fromisoformat(stopPrediction.get("actualLocalDateTime") or source.get("plannedLocalDateTime"))
-        cancelled = stopPrediction.get("cancelled")
-        direction = stopPrediction.get("destinationText")
-        if cancelled:
-            direction = '\u0336'.join(direction) + '\u0336'
+        if src.get("hasRtTime"):
+            datetime_timestamp = f"{src.get('date')}T{src.get('time')}"
+        else:
+            datetime_timestamp = f"{src.get('date')}T{src.get('rtTime')}"
+        timestamp=datetime.fromisoformat(datetime_timestamp)
+        direction = src.get("direction")
         return cls(
-            trip_id=stopPrediction["tripId"],
-            line_name=stopPrediction.get("lineName"),
+            trip_id=src["jr"],
+            line_name=src.get("line"),
             line_type=line_type,
             timestamp=timestamp,
             time=timestamp.strftime("%H:%M"),

@@ -115,7 +115,7 @@ class TransportSensor(SensorEntity):
     def fetch_departures(self) -> Optional[list[Departure]]:
         try:
             response = requests.get(
-                url=f"{API_ENDPOINT}/areainformation/{self.stop_id}",
+                url=f"{API_ENDPOINT}{self.stop_id}",
                 timeout=30,
             )
             response.raise_for_status()
@@ -130,7 +130,7 @@ class TransportSensor(SensorEntity):
 
         # parse JSON response
         try:
-            departures: list = response.json()["departures"]["departures"]
+            departures: list = list(response.json()["fahrten"].values())[0]["abfahrt"]
         except requests.exceptions.InvalidJSONError as ex:
             _LOGGER.error(f"API invalid JSON: {ex}")
             return []
@@ -138,7 +138,7 @@ class TransportSensor(SensorEntity):
         # keep departures only from the relevant track
         if self.track:
             for i in list(departures):
-                track = i.get("stopPrediction", {}).get("track")
+                track = i.get("track")
                 if str(self.track) in str(track):  # e.g. '1' in 'H.1'
                     departures.pop()
 
