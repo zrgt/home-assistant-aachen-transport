@@ -2,8 +2,7 @@ from datetime import timedelta
 
 DOMAIN = "aachen_transport"
 SCAN_INTERVAL = timedelta(seconds=60)
-API_ENDPOINT = "https://abfahrt.avv.de/index.php"
-API_MAX_RESULTS = 15
+API_ENDPOINT = "https://mova.aseag.de/mbroker/rest/"
 
 DEFAULT_ICON = "mdi:clock"
 
@@ -11,14 +10,13 @@ CONF_DEPARTURES = "departures"
 CONF_DEPARTURES_NAME = "name"
 CONF_DEPARTURES_STOP_ID = "stop_id"
 CONF_DEPARTURES_WALKING_TIME = "walking_time"
-CONF_DEPARTURES_DIRECTION = "direction"
+CONF_DEPARTURES_TRACK = "track"
 CONF_TYPE_SUBURBAN = "suburban"
 CONF_TYPE_SUBWAY = "subway"
 CONF_TYPE_TRAM = "tram"
-CONF_TYPE_BUS = "bus"
+CONF_TYPE_BUS = "BUS"
 CONF_TYPE_FERRY = "ferry"
-CONF_TYPE_EXPRESS = "express"
-CONF_TYPE_REGIONAL = "regional"
+CONF_TYPE_TRAIN = "RAILWAY"
 
 TRANSPORT_TYPE_VISUALS = {
     CONF_TYPE_SUBURBAN: {
@@ -46,13 +44,8 @@ TRANSPORT_TYPE_VISUALS = {
         "icon": "mdi:ferry",
         "color": "#0080BA"
     },
-    CONF_TYPE_EXPRESS: {
-        "code": "Train",
-        "icon": "mdi:train",
-        "color": "#4D4D4D"
-    },
-    CONF_TYPE_REGIONAL: {
-        "code": "RE",
+    CONF_TYPE_TRAIN: {
+        "code": "TRAIN",
         "icon": "mdi:train",
         "color": "#F01414"
     }

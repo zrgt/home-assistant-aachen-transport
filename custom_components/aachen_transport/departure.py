@@ -22,23 +22,28 @@ class Departure:
 
     @classmethod
     def from_dict(cls, source):
-        line_type = source.get("line", {}).get("product")
+        stopPrediction = source.get("stopPrediction")
+        line_type = stopPrediction.get("mobilityType")
         line_visuals = TRANSPORT_TYPE_VISUALS.get(line_type) or {}
-        timestamp=datetime.fromisoformat(source.get("when") or source.get("plannedWhen"))
+        timestamp=datetime.fromisoformat(stopPrediction.get("actualLocalDateTime") or source.get("plannedLocalDateTime"))
+        cancelled = stopPrediction.get("cancelled")
+        direction = stopPrediction.get("destinationText")
+        if cancelled:
+            direction = '\u0336'.join(direction) + '\u0336'
         return cls(
-            trip_id=source["tripId"],
-            line_name=source.get("line", {}).get("name"),
+            trip_id=stopPrediction["tripId"],
+            line_name=stopPrediction.get("lineName"),
             line_type=line_type,
             timestamp=timestamp,
             time=timestamp.strftime("%H:%M"),
-            direction=source.get("direction"),
+            direction=direction,
             icon=line_visuals.get("icon") or DEFAULT_ICON,
-            bg_color=source.get("line", {}).get("color", {}).get("bg"),
+            # bg_color=source.get("line", {}).get("color", {}).get("bg"),
             fallback_color=line_visuals.get("color"),
-            location=[
-                source.get("currentTripPosition", {}).get("latitude") or 0.0,
-                source.get("currentTripPosition", {}).get("longitude") or 0.0,
-            ],
+            # location=[
+            #     source.get("currentTripPosition", {}).get("latitude") or 0.0,
+            #     source.get("currentTripPosition", {}).get("longitude") or 0.0,
+            # ],
         )
 
     def to_dict(self):
