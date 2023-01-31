@@ -35,8 +35,11 @@ class Departure:
         line_visuals = TRANSPORT_TYPE_VISUALS.get(line_type) or {}
         time = source.get('rtTime') if source.get("hasRtTime") else source.get('time')
         timestamp=datetime.fromisoformat(f"{source.get('date')}T{time}")
-        minutes_left=(timestamp-datetime.now()).total_seconds()//60
-
+        secs_left = (timestamp-datetime.now()).total_seconds()
+        if secs_left<0:
+            minutes_left=0
+        else:
+            minutes_left=secs_left//60
         direction = str(source.get("direction"))
         for i in SIMPLIFIED_DIRECTION:
             if direction.startswith(i):
