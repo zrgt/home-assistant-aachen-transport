@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from .const import TRANSPORT_TYPE_VISUALS, DEFAULT_ICON, TRANSPORT_TYPE_CODES, \
-    CONF_TYPE_BUS
+    CONF_TYPE_BUS, SIMPLIFIED_DIRECTION
 
 
 @dataclass
@@ -36,7 +36,11 @@ class Departure:
         time = source.get('rtTime') if source.get("hasRtTime") else source.get('time')
         timestamp=datetime.fromisoformat(f"{source.get('date')}T{time}")
         minutes_left=(timestamp-datetime.now()).total_seconds()//60
-        direction = source.get("direction")
+
+        direction = str(source.get("direction"))
+        for i in SIMPLIFIED_DIRECTION:
+            if direction.startswith(i):
+                direction = SIMPLIFIED_DIRECTION[i]
 
         return cls(
             trip_id=source["jr"],

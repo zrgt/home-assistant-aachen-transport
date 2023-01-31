@@ -67,3 +67,14 @@ TRANSPORT_TYPE_CODES = {
     "RE": CONF_TYPE_REGIONAL,
     "RB": CONF_TYPE_REGIONAL,
 }
+
+
+SIMPLIFIED_DIRECTION = {
+    "Aachen Bushof": "Bushof",
+    "Hüls": "Josefskirche",
+    "Normaluhr": "Normaluhr",
+    "Bf. Rothe Erde": "Rothe Erde",
+    "Brand": "Rothe Erde",
+    "Verlautenheide": "Rothe Erde",
+    "Eilendorf": "Rothe Erde",
+}
