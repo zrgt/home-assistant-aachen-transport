@@ -13,7 +13,7 @@ class AachenTransportTimetableCard extends HTMLElement {
 
         const config = this.config;
         const maxEntries = config.max_entries || 10;
-        const showStopName = config.show_stop_name || true;
+        const showStopName = config.show_stop_name;
         const entityIds = config.entity ? [config.entity] : config.entities || [];
 
         let content = "";
