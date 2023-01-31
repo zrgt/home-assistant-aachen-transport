@@ -34,7 +34,9 @@ class AachenTransportTimetableCard extends HTMLElement {
                         <div class="line-icon" style="background-color: ${departure.color}">${departure.line_name}</div>
                     </div>
                     <div class="direction">${departure.direction}</div>
+                    <div class="delay">+${departure.delay}</div>
                     <div class="time">${departure.time}</div>
+                    <div class="minutes_left">${departure.minutes_left}min</div>
                 </div>`
             );
 
@@ -58,7 +60,7 @@ class AachenTransportTimetableCard extends HTMLElement {
         style.textContent = `
             .container {
                 padding: 10px;
-                font-size: 130%;
+                font-size: 100%;
                 line-height: 1.5em;
             }
             .stop {
@@ -100,11 +102,24 @@ class AachenTransportTimetableCard extends HTMLElement {
                 align-self: center;
                 flex-grow: 1;
             }
-            .time {
+            .minutes_left {
                 align-self: flex-start;
                 font-weight: 700;
                 line-height: 2em;
                 padding-right: 10px;
+                min-width: 40px;
+                text-align: right;
+            }
+            .delay {
+                align-self: flex-start;
+                font-weight: 100;
+                line-height: 2em;
+                font-size: 70%;
+            }
+            .time {
+                align-self: flex-start;
+                font-weight: 700;
+                line-height: 2em;
             }
         `;
      
