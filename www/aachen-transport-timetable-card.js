@@ -85,7 +85,7 @@ class AachenTransportTimetableCard extends HTMLElement {
                 gap: 20px;
             }
             .line {
-                min-width: 70px;
+                min-width: 50px;
                 text-align: right;
             }
             .line-icon {
