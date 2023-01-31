@@ -1,19 +1,22 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from .const import TRANSPORT_TYPE_VISUALS, DEFAULT_ICON
+from .const import TRANSPORT_TYPE_VISUALS, DEFAULT_ICON, TRANSPORT_TYPE_CODES, \
+    CONF_TYPE_BUS
 
 
 @dataclass
 class Departure:
-    """Departure dataclass to store data from API:
-    https://v5.vbb.transport.rest/api.html#get-stopsiddepartures"""
+    """Departure dataclass to store data from widget API:
+    https://abfahrt.avv.de/"""
 
     trip_id: str
     line_name: str
     line_type: str
     timestamp: datetime
     time: datetime
+    minutes_left: int
+    delay: int
     direction: str | None = None
     icon: str | None = None
     bg_color: str | None = None
@@ -22,29 +25,30 @@ class Departure:
 
     @classmethod
     def from_dict(cls, source):
-        src = source.get("stopPrediction")
-        line_type = "BUS"
+        line_name: str = source.get("line")
+
+        line_type = CONF_TYPE_BUS
+        for code in TRANSPORT_TYPE_CODES:
+            if line_name.startswith(code):
+                line_type = TRANSPORT_TYPE_CODES[code]
+
         line_visuals = TRANSPORT_TYPE_VISUALS.get(line_type) or {}
-        if src.get("hasRtTime"):
-            datetime_timestamp = f"{src.get('date')}T{src.get('time')}"
-        else:
-            datetime_timestamp = f"{src.get('date')}T{src.get('rtTime')}"
-        timestamp=datetime.fromisoformat(datetime_timestamp)
-        direction = src.get("direction")
+        time = source.get('rtTime') if source.get("hasRtTime") else source.get('time')
+        timestamp=datetime.fromisoformat(f"{source.get('date')}T{time}")
+        minutes_left=(timestamp-datetime.now()).total_seconds()//60
+        direction = source.get("direction")
+
         return cls(
-            trip_id=src["jr"],
-            line_name=src.get("line"),
+            trip_id=source["jr"],
+            line_name=line_name,
             line_type=line_type,
             timestamp=timestamp,
-            time=timestamp.strftime("%H:%M"),
+            time=time,
+            minutes_left=minutes_left,
+            delay=source.get("diff") if source.get("diff") else 0,
             direction=direction,
             icon=line_visuals.get("icon") or DEFAULT_ICON,
-            # bg_color=source.get("line", {}).get("color", {}).get("bg"),
             fallback_color=line_visuals.get("color"),
-            # location=[
-            #     source.get("currentTripPosition", {}).get("latitude") or 0.0,
-            #     source.get("currentTripPosition", {}).get("longitude") or 0.0,
-            # ],
         )
 
     def to_dict(self):
@@ -52,6 +56,8 @@ class Departure:
             "line_name": self.line_name,
             "line_type": self.line_type,
             "time": self.time,
+            "minutes_left": self.minutes_left,
+            "delay": self.delay,
             "direction": self.direction,
             "color": self.fallback_color or self.bg_color,
         }

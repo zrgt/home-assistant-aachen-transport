@@ -18,11 +18,11 @@ from .const import (  # pylint: disable=unused-import
     API_ENDPOINT,
     CONF_DEPARTURES,
     CONF_DEPARTURES_TRACK,
-    CONF_DEPARTURES_STOP_ID,
-    CONF_DEPARTURES_WALKING_TIME,
+    CONF_AVV_WIDGET_ID,
     CONF_TYPE_BUS,
     CONF_TYPE_FERRY,
-    CONF_TYPE_TRAIN,
+    CONF_TYPE_EXPRESS,
+    CONF_TYPE_REGIONAL,
     CONF_TYPE_SUBURBAN,
     CONF_TYPE_SUBWAY,
     CONF_TYPE_TRAM,
@@ -39,7 +39,8 @@ TRANSPORT_TYPES_SCHEMA = {
     vol.Optional(CONF_TYPE_TRAM, default=True): bool,
     vol.Optional(CONF_TYPE_BUS, default=True): bool,
     vol.Optional(CONF_TYPE_FERRY, default=True): bool,
-    vol.Optional(CONF_TYPE_TRAIN, default=True): bool,
+    vol.Optional(CONF_TYPE_EXPRESS, default=True): bool,
+    vol.Optional(CONF_TYPE_REGIONAL, default=True): bool,
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
@@ -47,9 +48,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_DEPARTURES): [
             {
                 vol.Required(CONF_DEPARTURES_NAME): str,
-                vol.Required(CONF_DEPARTURES_STOP_ID): int,
+                vol.Required(CONF_AVV_WIDGET_ID): str,
                 vol.Optional(CONF_DEPARTURES_TRACK): int,
-                vol.Optional(CONF_DEPARTURES_WALKING_TIME, default=1): int,
                 **TRANSPORT_TYPES_SCHEMA,
             }
         ]
@@ -75,15 +75,13 @@ class TransportSensor(SensorEntity):
     def __init__(self, hass: HomeAssistant, config: dict) -> None:
         self.hass: HomeAssistant = hass
         self.config: dict = config
-        self.stop_id: int = config[CONF_DEPARTURES_STOP_ID]
+        self.avv_widget_id: str = config[CONF_AVV_WIDGET_ID]
         self.sensor_name: str | None = config.get(CONF_DEPARTURES_NAME)
         self.track: int | None = config.get(CONF_DEPARTURES_TRACK)
-        self.walking_time: int = config.get(CONF_DEPARTURES_WALKING_TIME) or 1
-        # we add +1 minute anyway to delete the "just gone" transport
 
     @property
     def name(self) -> str:
-        return self.sensor_name or f"Stop ID: {self.stop_id}"
+        return self.sensor_name or f"Stop ID: {self.avv_widget_id}"
 
     @property
     def icon(self) -> str:
@@ -94,7 +92,7 @@ class TransportSensor(SensorEntity):
 
     @property
     def unique_id(self) -> str:
-        return f"stop_{self.stop_id}_{self.sensor_name}_departures"
+        return f"stop_{self.avv_widget_id}_{self.sensor_name}_departures"
 
     @property
     def state(self) -> str:
@@ -115,7 +113,7 @@ class TransportSensor(SensorEntity):
     def fetch_departures(self) -> Optional[list[Departure]]:
         try:
             response = requests.get(
-                url=f"{API_ENDPOINT}{self.stop_id}",
+                url=f"{API_ENDPOINT}{self.avv_widget_id}",
                 timeout=30,
             )
             response.raise_for_status()
@@ -126,7 +124,7 @@ class TransportSensor(SensorEntity):
             _LOGGER.warning(f"API timeout: {ex}")
             return []
 
-        _LOGGER.debug(f"OK: departures for {self.stop_id}: {response.text}")
+        _LOGGER.debug(f"OK: departures for {self.avv_widget_id}: {response.text}")
 
         # parse JSON response
         try:
@@ -139,8 +137,8 @@ class TransportSensor(SensorEntity):
         if self.track:
             for i in list(departures):
                 track = i.get("track")
-                if str(self.track) in str(track):  # e.g. '1' in 'H.1'
-                    departures.pop()
+                if str(self.track) not in str(track):  # e.g. '1' not in 'H.1'
+                    departures.remove(i)
 
         # convert api data into objects
         unsorted = [Departure.from_dict(departure) for departure in departures]
